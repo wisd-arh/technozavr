@@ -14,40 +14,43 @@
       {{product.price}} ₽
     </span>
 
-    <ul class="colors colors--black">
-      <li class="colors__item">
+    <!-- <ul class="colors colors--black">
+      <li class="colors__item" v-for="color in product.colors" :key="color">
         <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" v-model="color" value="#73B6EA">
-          <span class="colors__value" style="background-color: #73B6EA;">
+          <input class="colors__radio sr-only" type="radio" :name="'color-'+ product.id" :value="color">
+          <span class="colors__value" :style="{'background-color': color, 'border': '1px solid lightgrey'}">
           </span>
         </label>
       </li>
-      <li class="colors__item">
-        <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" v-model="color" value="#8BE000" >
-          <span class="colors__value" style="background-color: #8BE000;">
-          </span>
-        </label>
-      </li>
-      <li class="colors__item">
-        <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" v-model="color" value="#222" >
-          <span class="colors__value" style="background-color: #222;">
-          </span>
-        </label>
-      </li>
-    </ul>
+    </ul> -->
+    <ColorPicker :colors="productColors" :groupId="product.id" classList="colors colors--black" :currentColor.sync="currentColor"/>
   </li>
 </template>
 
 <script>
+import ColorPicker from './ColorPicker.vue'
+import colors from '@/data/colors'
+
 export default {
+  components: {
+    ColorPicker,
+  },
   name: 'ProductItem',
   props: ['product'],
-  data() {
-    return {
-      color: '#73B6EA',  
+  computed: {
+    productColors() {
+      return colors.filter(color => {
+        return this.product.colorsIds.indexOf(color.id) >=0
+      })
     }
   },
+  data() {
+    return {
+      currentColor: '',
+    }
+  },
+  created() {
+    this.currentColor = this.productColors[0].value
+  }
 }
 </script>
