@@ -1,11 +1,8 @@
 <template>
-  <ul :class="classList">
+  <ul>
     <li class="colors__item" v-for="color in colors" :key="color.id">
       <label class="colors__label">
-        <input class="colors__radio sr-only" type="radio" :name="'color-'+groupId" :value="color.id"
-          :checked="color"
-          @change="$emit('update:currentColor', $event.target.value)"        
-        >
+        <input class="colors__radio sr-only" type="radio" :value="color.id" v-model="pickerColor">
         <span class="colors__value" :style="{'background-color': color.value, 'border': '1px solid lightgrey'}">
         </span>
       </label>
@@ -16,10 +13,16 @@
 <script>
 export default {
   name: 'ColorPicker',
-  model: {
-    prop: 'currentColor',
-    event: 'update'
+  props: ['colors', 'currentColor'],
+  computed: {
+    pickerColor: { 
+      get() {
+        return this.currentColor
+      },
+      set(value) {
+        this.$emit('update:currentColor', value)
+      }
+    }
   },
-  props: ['colors', 'groupId', 'classList', 'currentColor'],
 }
 </script>

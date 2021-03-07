@@ -14,16 +14,7 @@
       {{product.price}} ₽
     </span>
 
-    <!-- <ul class="colors colors--black">
-      <li class="colors__item" v-for="color in product.colors" :key="color">
-        <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" :name="'color-'+ product.id" :value="color">
-          <span class="colors__value" :style="{'background-color': color, 'border': '1px solid lightgrey'}">
-          </span>
-        </label>
-      </li>
-    </ul> -->
-    <ColorPicker :colors="productColors" :groupId="product.id" classList="colors colors--black" :currentColor.sync="currentColor"/>
+    <ColorPicker class="colors colors--black" :colors="productColors" :currentColor.sync="currentColor"/>
   </li>
 </template>
 
@@ -50,7 +41,7 @@ export default {
     }
   },
   created() {
-    this.currentColor = this.productColors[0].value
+    this.currentColor = this.productColors[0].id
   }
 }
 </script>

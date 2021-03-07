@@ -28,16 +28,7 @@
 
         <fieldset class="form__block">
             <legend class="form__legend">Цвет</legend>
-            <!-- <ul class="colors">
-                <li class="colors__item" v-for="color in colors" :key="color.id">
-                <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color" :value="color.value" v-model="currentColor">
-                    <span class="colors__value" :style="{'background-color':  color.value }">
-                    </span>
-                </label>
-                </li>
-            </ul> -->
-            <ColorPicker :colors="colors" groupId="filter" classList="colors" :currentColor.sync="currentColor"/>
+            <ColorPicker class="colors" :colors="colors" :currentColor.sync="currentColor"/>
         </fieldset>
 
         <fieldset class="form__block">
