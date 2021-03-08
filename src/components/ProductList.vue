@@ -1,6 +1,6 @@
 <template>
   <ul class="catalog__list">
-    <ProductItem  v-for="product in products" :key="product.id" :product="product"/>
+    <ProductItem  v-for="product in products" :key="product.id" :product="product" @gotoPage="(pageName, pageParams) => $emit('gotoPage', pageName, pageParams)"/>
   </ul>
 </template>
 
@@ -11,6 +11,6 @@ export default {
   props: ['products'],
   components: {
       ProductItem
-  }
+  },
 }
 </script>

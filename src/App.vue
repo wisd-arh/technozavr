@@ -1,80 +1,39 @@
 <template>
-  <main class="content container">
-    <div class="content__top content__top--catalog">
-      <h1 class="content__title">
-        Каталог
-      </h1>
-      <span class="content__info">
-        {{ countProducts }} товара
-      </span>
-    </div>
-    <div class="content__catalog">
-      <ProductFilter :priceFrom.sync="filterPriceFrom" :priceTo.sync="filterPriceTo" :categoryId.sync="filterCategory" :colorId.sync="filterColor"/>
-    <section class="catalog">
-      <ProductList :products="products"/>
-      <AppPagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
-    </section>
-    </div>
-  </main>
+  <component :is="currentPageComponent" :page-params="currentPageParams" @gotoPage="(pageName, pageParams) => gotoPage(pageName, pageParams)"/>
 </template>
 
 <script>
-import products from './data/products'
-import ProductList from './components/ProductList.vue'
-import AppPagination from './components/AppPagination.vue'
-import ProductFilter from './components/ProductFilter.vue'
+import MainPage from '@/pages/MainPage.vue'
+import ProductPage from '@/pages/ProductPage.vue'
+import NotFoundPage from '@/pages/NotFoundPage.vue'
+const routes = {
+  main: 'MainPage',
+  product: 'ProductPage',
+}
 
 export default {
   components: {
-    ProductList,
-    AppPagination,
-    ProductFilter
+    MainPage,
+    ProductPage,
+    NotFoundPage
   },
   name: 'App',
+  computed: {
+    currentPageComponent() {
+      return routes[this.currentPage] || 'NotFoundPage'
+    }
+  },
   data() {
     return {
-        filterPriceFrom: 0,
-        filterPriceTo: 0,
-        filterCategory: 0,
-        filterColor: "",
-        page: 1,
-        productsPerPage: 6,
+        currentPage: 'main',
+        currentPageParams: {},
     }
   },
-  watch: {
-    countProducts() {
-      this.page = 1
-    }  
-  },
-  computed: {
-    filteredProducts() {
-      let filteredProducts = products
-      if (this.filterPriceFrom > 0) 
-        filteredProducts = filteredProducts.filter(product => product.price >= this.filterPriceFrom)
-      if (this.filterPriceTo > 0) 
-        filteredProducts = filteredProducts.filter(product => product.price <= this.filterPriceTo)
-      if (this.filterCategory) 
-        filteredProducts = filteredProducts.filter(product => product.categoryId === this.filterCategory)
-      
-      if (this.filterColor)  
-        filteredProducts = filteredProducts.filter(product => {
-              for (var i = 0; i < product.colorsIds.length; i++) {
-                    if (product.colorsIds[i] == this.filterColor) {
-                        return true;
-                    }
-                }
-              return false;     
-            }
-          )
-      return filteredProducts
-    },
-    products()  {
-        const offset = (this.page - 1)*this.productsPerPage
-        return this.filteredProducts.slice(offset, offset + this.productsPerPage)
-    },
-    countProducts() {
-        return this.filteredProducts.length
+  methods: {
+    gotoPage(pageName, pageParams) {
+      this.currentPage = pageName
+      this.currentPageParams = pageParams || {}
     }
-  }
+  },
 }
 </script>
