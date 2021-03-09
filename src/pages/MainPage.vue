@@ -11,7 +11,7 @@
     <div class="content__catalog">
       <ProductFilter :priceFrom.sync="filterPriceFrom" :priceTo.sync="filterPriceTo" :categoryId.sync="filterCategory" :colorId.sync="filterColor"/>
     <section class="catalog">
-      <ProductList :products="products" @gotoPage="(pageName, pageParams) => $emit('gotoPage', pageName, pageParams)"/>
+      <ProductList :products="products"/>
       <AppPagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
     </section>
     </div>

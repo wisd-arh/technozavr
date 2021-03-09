@@ -1,6 +1,6 @@
 <template>
   <li class="catalog__item">
-    <a class="catalog__pic" href="#" @click.prevent="$emit('gotoPage', 'product', {id: product.id})">
+    <a class="catalog__pic" href="#" @click.prevent="gotoPage('product', {id: product.id})">
       <img :src="product.image" :alt="product.title">
     </a>
 
@@ -21,6 +21,7 @@
 <script>
 import ColorPicker from './ColorPicker.vue'
 import colors from '@/data/colors'
+import eventBus from '@/eventBus'
 
 export default {
   components: {
@@ -42,6 +43,11 @@ export default {
   },
   created() {
     this.currentColor = this.productColors[0].id
+  },
+  methods: {
+    gotoPage(pageName, pageParams) {
+      eventBus.$emit('gotoPage', pageName, pageParams)
+    }
   }
 }
 </script>
