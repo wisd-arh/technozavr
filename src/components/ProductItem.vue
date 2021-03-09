@@ -11,7 +11,7 @@
     </h3>
 
     <span class="catalog__price">
-      {{product.price}} ₽
+      {{ product.price | numberFormat }} ₽
     </span>
 
     <ColorPicker class="colors colors--black" :colors="productColors" :currentColor.sync="currentColor"/>
@@ -21,7 +21,8 @@
 <script>
 import ColorPicker from './ColorPicker.vue'
 import colors from '@/data/colors'
-import eventBus from '@/eventBus'
+import gotoPage from '@/helpers/gotoPage'
+import numberFormat from '@/helpers/numberFormat'
 
 export default {
   components: {
@@ -29,12 +30,15 @@ export default {
   },
   name: 'ProductItem',
   props: ['product'],
+  filters: {
+    numberFormat
+  },
   computed: {
     productColors() {
       return colors.filter(color => {
         return this.product.colorsIds.indexOf(color.id) >=0
       })
-    }
+    },
   },
   data() {
     return {
@@ -45,9 +49,7 @@ export default {
     this.currentColor = this.productColors[0].id
   },
   methods: {
-    gotoPage(pageName, pageParams) {
-      eventBus.$emit('gotoPage', pageName, pageParams)
-    }
+    gotoPage
   }
 }
 </script>
