@@ -1,3 +1,4 @@
 export default function(value) {
-    return new Intl.NumberFormat().format(value)
+    let result = (typeof value === 'number') ? new Intl.NumberFormat().format(value) : ''
+    return result
 }
