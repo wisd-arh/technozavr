@@ -24,5 +24,14 @@ export default new Vuex.Store({
             productId: '1fd5b901132f2c8b488b24230fe8131e',
             amount: 3
         }]
+    },
+    mutations: {
+        addProductToCart(state, {productId, amount}) {
+            let item = state.cartProducts.find(item => item.productId === productId)
+            if (item) {
+                item.amount += amount
+            } else 
+                state.cartProducts.push({productId, amount})
+        }
     }
 })
