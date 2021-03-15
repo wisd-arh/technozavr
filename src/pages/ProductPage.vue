@@ -40,28 +40,7 @@
 
                         <fieldset class="form__block">
                             <legend class="form__legend">Цвет:</legend>
-                            <ul class="colors">
-                                <li class="colors__item">
-                                    <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="blue" checked="">
-                    <span class="colors__value" style="background-color: #73B6EA;">
-                    </span>
-                  </label>
-                                </li>
-                                <li class="colors__item">
-                                    <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="yellow">
-                    <span class="colors__value" style="background-color: #FFBE15;">
-                    </span>
-                  </label>
-                                </li>
-                                <li class="colors__item">
-                                    <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item" value="gray">
-                    <span class="colors__value" style="background-color: #939393;">
-                  </span></label>
-                                </li>
-                            </ul>
+                            <ColorPicker class="colors" :colors="colors" :currentColor.sync="currentColor"/>
                         </fieldset>
 
                         <fieldset class="form__block">
@@ -96,7 +75,7 @@
                         </fieldset>
 
                         <div class="item__row">
-                            <AppUpDown :amount.sync="productAmount"/>
+                            <AppCounter :amount.sync="productAmount"/>
                             <button class="button button--primery" type="submit">
                                 В корзину
                             </button>
@@ -160,23 +139,29 @@
     </main>
 </template>
 <script>
+import colors from '@/data/colors'
 import products from '@/data/products'
 import categories from '@/data/categories'
 import gotoPage from '@/helpers/gotoPage'
 import numberFormat from '@/helpers/numberFormat'
-import AppUpDown from '@/components/AppUpDown.vue'
+import AppCounter from '@/components/AppCounter.vue'
+import ColorPicker from "@/components/ColorPicker.vue";
 
 export default {
-    components: { AppUpDown },
+    components: { AppCounter, ColorPicker },
     data() {
         return {
             productAmount: 1,
+            currentColor: '',
         }
     },
     filters: {
         numberFormat
     },
     computed: {
+        colors() {
+            return colors.filter(color => this.product.colorsIds.indexOf(color.id) >= 0)
+        },
         product() {
             return products.find(product =>  product.id == this.$route.params.id)
         },
@@ -191,6 +176,13 @@ export default {
                 {productId: this.product.id, amount: this.productAmount}
             )
         },
-    }
+    },
+    watch: {
+        '$route.params.id'()  {
+            if (!this.product) {
+                this.$router.replace({name: 'notFound', params: { '0': '/' }})
+            }
+        },
+    },
 }
 </script>
