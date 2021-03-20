@@ -20,14 +20,14 @@
 
 <script>
 import ColorPicker from './ColorPicker.vue'
-import colors from '@/data/colors'
+// import colors from '@/data/colors'
 import gotoPage from '@/helpers/gotoPage'
 import numberFormat from '@/helpers/numberFormat'
 
 export default {
-  components: {
-    ColorPicker,
-  },
+    components: {
+      ColorPicker,
+    },
   name: 'ProductItem',
   props: ['product'],
   filters: {
@@ -35,8 +35,14 @@ export default {
   },
   computed: {
     productColors() {
-      return colors.filter(color => {
-        return this.product.colorsIds.indexOf(color.id) >=0
+      // return colors.filter(color => {
+      //   return this.product.colorsIds.indexOf(color.id) >=0
+      // })
+      return this.product.colors.map(color => {
+        return {
+          ...color,
+          value: color.code
+        }
       })
     },
   },

@@ -5,13 +5,13 @@
         Каталог
       </h1>
       <span class="content__info">
-        {{ countProducts }} товара
+        {{ countProductsString }} 
       </span>
     </div>
     <div class="content__catalog">
       <ProductFilter :priceFrom.sync="filterPriceFrom" :priceTo.sync="filterPriceTo" :categoryId.sync="filterCategory" :colorId.sync="filterColor"/>
     <section class="catalog">
-      <ProductList :products="products"/>
+      <ProductList :products="filteredProducts"/>
       <AppPagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
     </section>
     </div>
@@ -19,10 +19,12 @@
 </template>
 
 <script>
-import products from '@/data/products'
+//import products from '@/data/products'
 import ProductList from '@/components/ProductList.vue'
 import AppPagination from '@/components/AppPagination.vue'
 import ProductFilter from '@/components/ProductFilter.vue'
+import axios from 'axios'
+import getNumEnding from '@/helpers/getNumEnding'
 
 export default {
   components: {
@@ -38,42 +40,62 @@ export default {
         filterColor: "",
         page: 1,
         productsPerPage: 6,
+        productsData: null,
     }
   },
   watch: {
     countProducts() {
       this.page = 1
-    }  
+    },
+    page() {
+      this.loadProducts()
+    },
   },
   computed: {
     filteredProducts() {
-      let filteredProducts = products
+      let filteredProducts = this.products
       if (this.filterPriceFrom > 0) 
         filteredProducts = filteredProducts.filter(product => product.price >= this.filterPriceFrom)
       if (this.filterPriceTo > 0) 
         filteredProducts = filteredProducts.filter(product => product.price <= this.filterPriceTo)
-      if (this.filterCategory) 
-        filteredProducts = filteredProducts.filter(product => product.categoryId === this.filterCategory)
+      // if (this.filterCategory) 
+      //   filteredProducts = filteredProducts.filter(product => product.categoryId === this.filterCategory)
       
-      if (this.filterColor)  
-        filteredProducts = filteredProducts.filter(product => {
-              for (var i = 0; i < product.colorsIds.length; i++) {
-                    if (product.colorsIds[i] == this.filterColor) {
-                        return true;
-                    }
-                }
-              return false;     
-            }
-          )
+      // if (this.filterColor)  
+      //   filteredProducts = filteredProducts.filter(product => {
+      //         for (var i = 0; i < product.colorsIds.length; i++) {
+      //               if (product.colorsIds[i] == this.filterColor) {
+      //                   return true;
+      //               }
+      //           }
+      //         return false;     
+      //       }
+      //     )
       return filteredProducts
     },
     products()  {
-        const offset = (this.page - 1)*this.productsPerPage
-        return this.filteredProducts.slice(offset, offset + this.productsPerPage)
+      return this.productsData ? this.productsData.items.map(product => {
+        return {
+          ...product,
+          image: product.image.file.url
+        }
+      }) : []
     },
     countProducts() {
-        return this.filteredProducts.length
-    }
+      return this.productsData ? this.productsData.pagination.total : 0
+    },
+    countProductsString() {
+      return this.countProducts + ' ' + getNumEnding(this.countProducts, ['товар', 'товара', 'товаров'])
+    },
+  },
+  methods: {
+    loadProducts() {
+      axios.get(`https://vue-study.skillbox.cc/api/products?page=${this.page}&limit=${this.productsPerPage}`)
+        .then(response => this.productsData = response.data)
+    },
+  },
+  created() {
+    this.loadProducts()
   }
 }
 </script>
