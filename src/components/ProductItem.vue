@@ -20,7 +20,6 @@
 
 <script>
 import ColorPicker from './ColorPicker.vue'
-// import colors from '@/data/colors'
 import gotoPage from '@/helpers/gotoPage'
 import numberFormat from '@/helpers/numberFormat'
 
@@ -35,9 +34,6 @@ export default {
   },
   computed: {
     productColors() {
-      // return colors.filter(color => {
-      //   return this.product.colorsIds.indexOf(color.id) >=0
-      // })
       return this.product.colors.map(color => {
         return {
           ...color,

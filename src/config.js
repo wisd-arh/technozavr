@@ -1,0 +1,1 @@
+export const API_BASE = 'https://vue-study.skillbox.cc/api/'

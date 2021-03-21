@@ -101,9 +101,9 @@
     </aside>
 </template>
 <script>
-import categories from "../data/categories"; 
-import colors from "../data/colors"; 
 import ColorPicker from "./ColorPicker.vue";
+import axios from 'axios'
+import { API_BASE } from '@/config'
 
 export default {
     components: {
@@ -115,6 +115,8 @@ export default {
             currentPriceTo: 0,
             currentCategory: 0,
             currentColor: "",
+            categoriesData: null,
+            colorsData: null,
         }
     },
     props: ['priceFrom', 'priceTo', 'categoryId', 'colorId'],
@@ -134,10 +136,15 @@ export default {
     },
     computed: {
         categories() {
-            return categories
+            return this.categoriesData ? this.categoriesData.items : []
         },
         colors() {
-            return colors
+            return this.colorsData ? this.colorsData.items.map(color => {
+                return {
+                ...color,
+                value: color.code
+                }            
+            }) : []
         },
     },
     methods: {
@@ -152,7 +159,19 @@ export default {
             this.$emit("update:priceTo", 0)
             this.$emit("update:categoryId", 0)
             this.$emit("update:colorId", '')
-        }        
-    }
+        },
+        loadCategoties() {
+            axios.get(API_BASE + 'productCategories',)
+            .then(response => this.categoriesData = response.data)
+        },
+        loadColors() {
+            axios.get(API_BASE + 'colors',)
+            .then(response => this.colorsData = response.data)
+        }
+    },
+    created() {
+        this.loadCategoties()
+        this.loadColors()
+    },
 }
 </script>
