@@ -11,6 +11,19 @@
     <div class="content__catalog">
       <ProductFilter :priceFrom.sync="filterPriceFrom" :priceTo.sync="filterPriceTo" :categoryId.sync="filterCategory" :colorId.sync="filterColor"/>
     <section class="catalog">
+        <div class="b-popup" v-if="productsLoading">
+          <div>Загрузка товаров...
+            <div class="b-popup-content">
+              <div class="holder">Загрузка товаров...
+                <div class="preloader"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              </div>        
+            </div>  
+          </div>
+        </div>
+      <div v-if="productsLoadingFailed">Ошибка при загрузке товаров...
+        <p><a @click.prevent="loadProducts" class="errLink">Попробовать ещё раз</a></p>
+        <div><img src="../../public/img/icons/SVG-Animation-404-Page.gif"/></div>
+      </div>
       <ProductList :products="products"/>
       <AppPagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
     </section>
@@ -41,6 +54,8 @@ export default {
         page: 1,
         productsPerPage: 6,
         productsData: null,
+        productsLoading: false,
+        productsLoadingFailed: false,
     }
   },
   watch: {
@@ -81,9 +96,11 @@ export default {
   },
   methods: {
     loadProducts() {
+      this.productsLoading = true
+      this.productsLoadingFailed = false
       clearTimeout(this.loadProductsTimer)
       this.loadProductsTimer = setTimeout(() => {
-        axios.get(API_BASE + 'products',
+        axios.get(API_BASE + 'products2',
           {
             params: {
               page: this.page,
@@ -95,7 +112,9 @@ export default {
             }
           })
           .then(response => this.productsData = response.data)
-      }, 0)    
+          .catch(() => this.productsLoadingFailed = true)
+          .then(() => this.productsLoading = false)
+      }, 5000)    
     },
   },
   created() {
@@ -103,3 +122,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.errLink {
+  text-decoration: underline; 
+  cursor: pointer;
+}
+</style>
