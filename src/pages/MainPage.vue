@@ -11,18 +11,11 @@
     <div class="content__catalog">
       <ProductFilter :priceFrom.sync="filterPriceFrom" :priceTo.sync="filterPriceTo" :categoryId.sync="filterCategory" :colorId.sync="filterColor"/>
     <section class="catalog">
-        <div class="b-popup" v-if="productsLoading">
-          <div>Загрузка товаров...
-            <div class="b-popup-content">
-              <div class="holder">Загрузка товаров...
-                <div class="preloader"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-              </div>        
-            </div>  
-          </div>
-        </div>
-      <div v-if="productsLoadingFailed">Ошибка при загрузке товаров...
-        <p><a @click.prevent="loadProducts" class="errLink">Попробовать ещё раз</a></p>
-        <div><img src="../../public/img/icons/SVG-Animation-404-Page.gif"/></div>
+      <div v-if="productsLoading">
+        <LoaderInfo title="Загрузка товаров"/>
+      </div>
+      <div v-if="productsLoadingFailed">
+        <LoaderErrorInfo title='Ошибка при загрузке товаров...' v-on:reload="reload"/>
       </div>
       <ProductList :products="products"/>
       <AppPagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
@@ -35,6 +28,8 @@
 import ProductList from '@/components/ProductList.vue'
 import AppPagination from '@/components/AppPagination.vue'
 import ProductFilter from '@/components/ProductFilter.vue'
+import LoaderInfo from '@/components/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
 import axios from 'axios'
 import getNumEnding from '@/helpers/getNumEnding'
 import { API_BASE } from '@/config'
@@ -43,7 +38,9 @@ export default {
   components: {
     ProductList,
     AppPagination,
-    ProductFilter
+    ProductFilter,
+    LoaderInfo,
+    LoaderErrorInfo
   },
   data() {
     return {
@@ -95,12 +92,15 @@ export default {
     },
   },
   methods: {
+    reload() {
+      this.loadProducts()
+    },
     loadProducts() {
       this.productsLoading = true
       this.productsLoadingFailed = false
       clearTimeout(this.loadProductsTimer)
       this.loadProductsTimer = setTimeout(() => {
-        axios.get(API_BASE + 'products2',
+        axios.get(API_BASE + 'products',
           {
             params: {
               page: this.page,
@@ -114,7 +114,7 @@ export default {
           .then(response => this.productsData = response.data)
           .catch(() => this.productsLoadingFailed = true)
           .then(() => this.productsLoading = false)
-      }, 5000)    
+      }, 0)    
     },
   },
   created() {

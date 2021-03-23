@@ -1,5 +1,11 @@
 <template>
-    <main class="content container">
+    <main class="content container" v-if="productLoading">
+        <LoaderInfo title="Загрузка товара." />
+    </main>
+    <main class="content container" v-else-if="!productData">
+        <LoaderErrorInfo title='Ошибка при загрузке информации...' v-on:reload="reload"/>
+    </main>
+    <main class="content container" v-else>
         <div class="content__top">
             <ul class="breadcrumbs">
                 <li class="breadcrumbs__item">
@@ -139,20 +145,25 @@
     </main>
 </template>
 <script>
-import colors from '@/data/colors'
-import products from '@/data/products'
-import categories from '@/data/categories'
-import gotoPage from '@/helpers/gotoPage'
-import numberFormat from '@/helpers/numberFormat'
 import AppCounter from '@/components/AppCounter.vue'
 import ColorPicker from "@/components/ColorPicker.vue";
+import LoaderInfo from '@/components/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
+import gotoPage from '@/helpers/gotoPage'
+import numberFormat from '@/helpers/numberFormat'
+import axios from 'axios'
+import { API_BASE } from '@/config'
+
 
 export default {
-    components: { AppCounter, ColorPicker },
+    components: { AppCounter, ColorPicker, LoaderInfo, LoaderErrorInfo },
     data() {
         return {
             productAmount: 1,
             currentColor: '',
+            productData: null,
+            productLoading: false,
+            productLoadingFailed: false,
         }
     },
     filters: {
@@ -160,13 +171,19 @@ export default {
     },
     computed: {
         colors() {
-            return colors.filter(color => this.product.colorsIds.indexOf(color.id) >= 0)
+            return this.productData ? this.productData.colors.map(color => {
+                return {
+                ...color,
+                value: color.code
+                }            
+            }) : []
         },
         product() {
-            return products.find(product =>  product.id == this.$route.params.id)
+            return this.productData ? { ...this.productData,
+                    image: this.productData.image.file.url } : null
         },
         category() {
-            return categories.find(category =>  category.id == this.product.categoryId)
+            return this.productData.category
         },
     },
     methods: {
@@ -176,12 +193,28 @@ export default {
                 {productId: this.product.id, amount: this.productAmount}
             )
         },
+        loadProduct() {
+            this.productLoading = true
+            this.productLoadingFailed = false
+
+            axios.get(API_BASE + 'products/' + this.$route.params.id)
+                .then(response => this.productData = response.data)
+                .catch(() => this.productLoadingFailed = true)
+                .then(() => this.productLoading = false)
+        },
+        reload() {
+            this.loadProduct()      
+        }
     },
     watch: {
-        '$route.params.id'()  {
-            if (!this.product) {
-                this.$router.replace({name: 'notFound', params: { '0': '/' }})
-            }
+        '$route.params.id': {
+            handler() {
+                this.loadProduct()
+                // if (!this.product) {
+                //     this.$router.replace({name: 'notFound', params: { '0': '/' }})
+                // }
+            },
+            immediate: true    
         },
     },
 }
