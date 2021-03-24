@@ -1,30 +1,17 @@
 import Vue from "vue"
 import Vuex from "vuex"
-import products from '@/data/products'
+import axios from 'axios'
+import { API_BASE } from '@/config'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        cartProducts: [{
-            productId: '2a9bbfeae4ce4f9245c874f30a290fb5',
-            amount: 2
-        }, {
-            productId: '0b3275e2499380a8d7d6420e6b58af8e',
-            amount: 4
-        }, {
-            productId: '09aec722cbb4f3fd751c522ba1bc1499',
-            amount: 7
-        }, {
-            productId: '9f8e33e8b49b17b29894a5aef8afd08c',
-            amount: 1
-        }, {
-            productId: '2e80c5cfad6a361d19b9e01843683a00',
-            amount: 20
-        }, {
-            productId: '1fd5b901132f2c8b488b24230fe8131e',
-            amount: 3
-        }]
+        cartProducts: [],
+        userAccessKey: null,
+        cartProductsData: [],
+        cartLoading: false,
+        cartLoadingError: false,
     },
     mutations: {
         addProductToCart(state, {productId, amount}) {
@@ -42,15 +29,37 @@ export default new Vuex.Store({
         },
         deleteCartProduct(state, productId) {
             state.cartProducts = state.cartProducts.filter(item => item.productId !== productId)
+        },
+        updateUserAccessKey(state, accessKey) {
+            state.userAccessKey = accessKey
+        },
+        updateCartProductsData(state, items) {
+            state.cartProductsData = items
+        },
+        syncCartProducts(state) {
+            state.cartProducts = state.cartProductsData.map( item => {
+                return {
+                    productId: item.product.id,
+                    amount: item.quantity
+                }
+            })
+        },
+        updateLoadingStatus(state, {loading, error}) {
+            state.cartLoading = loading
+            state.cartLoadingError = error
         }
     },
     getters: {
         cartDetailProducts(state) {
             return state.cartProducts.map(item => {
+                const product =  state.cartProductsData.find(p => p.product.id === item.productId).product
                 return {
                     ...item,
-                    product: products.find(p => p.id === item.productId)
-                } 
+                    product: {
+                        ...product,
+                        image: product.image.file.url
+                    } 
+                }    
             })
         },
         cartTotalPrice(state, getters) {
@@ -58,6 +67,32 @@ export default new Vuex.Store({
         },
         cartPositionsCount(state) {
             return state.cartProducts.length
+        },
+        cartLoading(state) {
+            return state.cartLoading
+        },
+        cartLoadingError(state) {
+            return state.cartLoadingError
+        }
+    },
+    actions: {
+        loadCart(context) {
+            context.commit('updateLoadingStatus', {loading: true, error: false})
+            axios.get(API_BASE + 'baskets', {
+                    params: { userAccessKey: context.state.userAccessKey }
+                })
+                .then(response => {
+                    if (!context.state.userAccessKey) {
+                        localStorage.setItem('userAccessKey', response.data.user.accessKey)
+                        context.commit('updateUserAccessKey', response.data.user.accessKey)
+                    }
+                    context.commit('updateCartProductsData', response.data.items)
+                    context.commit('syncCartProducts')
+                    context.commit('updateLoadingStatus', {loading: false, error: false})
+                })    
+                .catch(() => { 
+                    context.commit('updateLoadingStatus', {loading: false, error: true})
+                })
         }
     },
 })

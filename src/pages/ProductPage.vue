@@ -199,7 +199,12 @@ export default {
 
             axios.get(API_BASE + 'products/' + this.$route.params.id)
                 .then(response => this.productData = response.data)
-                .catch(() => this.productLoadingFailed = true)
+                .catch((err) => { 
+                    this.productLoadingFailed = true
+                    if (err.request.status == 404) {
+                       this.$router.replace({name: 'notFound', params: { '0': '/' }}) 
+                    }
+                })
                 .then(() => this.productLoading = false)
         },
         reload() {

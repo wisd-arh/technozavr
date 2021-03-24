@@ -18,5 +18,6 @@ export default {
 <style scoped>
 a {
     text-decoration: underline;
+    cursor: pointer;
 }
 </style>

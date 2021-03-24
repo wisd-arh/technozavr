@@ -1,5 +1,11 @@
 <template>
-    <main class="content container">
+    <main class="content container" v-if="cartLoading">
+        <LoaderInfo title="Загрузка корзины"/>
+    </main>
+    <main class="content container" v-else-if="cartLoadingError">
+        <LoaderErrorInfo title='Ошибка при загрузке корзины...' v-on:reload="reload"/>
+    </main>
+    <main class="content container" v-else>
         <div class="content__top">
             <ul class="breadcrumbs">
                 <li class="breadcrumbs__item">
@@ -48,22 +54,32 @@
 </template>
 <script>
 import numberFormat from '@/helpers/numberFormat'
-import { mapGetters} from 'vuex'
+import { mapGetters, mapActions} from 'vuex'
 import getNumEnding from '@/helpers/getNumEnding'
 import CartItem from '@/components/CartItem.vue'
+import LoaderInfo from '@/components/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
 
 export default {
-    components: { CartItem },
+    components: { CartItem, LoaderInfo, LoaderErrorInfo },
     filters: {
       numberFormat
     },
     computed: {
       ...mapGetters({products: 'cartDetailProducts', 
                     totalPrice: 'cartTotalPrice',
-                    cartPositionsCount: 'cartPositionsCount'}),
+                    cartPositionsCount: 'cartPositionsCount', 
+                    cartLoading: 'cartLoading', 
+                    cartLoadingError: 'cartLoadingError'}),
       cartCount() {
         return this.cartPositionsCount + ' ' + getNumEnding(this.cartPositionsCount, ['товар', 'товара', 'товаров'])
       }                    
-    }
+    },
+    methods: {
+        ...mapActions(['loadCart']),
+        reload() {
+            this.loadCart()
+        }
+    },
 }
 </script>
