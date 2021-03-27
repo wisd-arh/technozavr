@@ -82,10 +82,14 @@
 
                         <div class="item__row">
                             <AppCounter :amount.sync="productAmount"/>
-                            <button class="button button--primery" type="submit">
+                            <button class="button button--primery" type="submit" :disabled="productAddSending">
                                 В корзину
                             </button>
+                            <div v-show="productAdded">Товар добавлен в корзину.</div>
                         </div>    
+                        <div v-if="productAddSending">
+                            <LoaderInfo title="Добавление в корзину"/>
+                        </div>
 
                     </form>
                 </div>
@@ -145,15 +149,15 @@
     </main>
 </template>
 <script>
-import AppCounter from '@/components/AppCounter.vue'
-import ColorPicker from "@/components/ColorPicker.vue";
-import LoaderInfo from '@/components/LoaderInfo.vue'
-import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
+import AppCounter from '@/components/App/AppCounter.vue'
+import ColorPicker from "@/components/App/AppColorPicker.vue";
+import LoaderInfo from '@/components/Loaders/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/Loaders/LoaderErrorInfo.vue'
 import gotoPage from '@/helpers/gotoPage'
 import numberFormat from '@/helpers/numberFormat'
 import axios from 'axios'
 import { API_BASE } from '@/config'
-
+import { mapActions } from 'vuex'
 
 export default {
     components: { AppCounter, ColorPicker, LoaderInfo, LoaderErrorInfo },
@@ -164,6 +168,9 @@ export default {
             productData: null,
             productLoading: false,
             productLoadingFailed: false,
+
+            productAdded: false,
+            productAddSending: false,
         }
     },
     filters: {
@@ -187,11 +194,20 @@ export default {
         },
     },
     methods: {
+        ...mapActions(['addProductToCart']),
         gotoPage,
         addToCart() {
-            this.$store.commit('addProductToCart',
-                {productId: this.product.id, amount: this.productAmount}
-            )
+            this.productAdded = false
+            this.productAddSending = true
+            this.addProductToCart({productId: this.product.id, amount: this.productAmount})
+                .then(() => {
+                    this.productAdded = true
+                    this.productAddSending = false
+                })
+                .catch(() => {
+                    this.productAdded = false
+                    this.productAddSending = false
+                })
         },
         loadProduct() {
             this.productLoading = true

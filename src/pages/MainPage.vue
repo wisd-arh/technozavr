@@ -25,11 +25,11 @@
 </template>
 
 <script>
-import ProductList from '@/components/ProductList.vue'
-import AppPagination from '@/components/AppPagination.vue'
-import ProductFilter from '@/components/ProductFilter.vue'
-import LoaderInfo from '@/components/LoaderInfo.vue'
-import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
+import ProductList from '@/components/Product/ProductList.vue'
+import AppPagination from '@/components/App/AppPagination.vue'
+import ProductFilter from '@/components/Product/ProductFilter.vue'
+import LoaderInfo from '@/components/Loaders/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/Loaders/LoaderErrorInfo.vue'
 import axios from 'axios'
 import getNumEnding from '@/helpers/getNumEnding'
 import { API_BASE } from '@/config'

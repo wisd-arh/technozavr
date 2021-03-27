@@ -25,8 +25,8 @@
 </template>
 <script>
 import numberFormat from '@/helpers/numberFormat'
-import { mapMutations } from 'vuex'
-import AppCounter from '@/components/AppCounter.vue'
+import { mapActions } from 'vuex'
+import AppCounter from '@/components/App/AppCounter.vue'
 
 export default {
     name: 'CartItem',
@@ -41,12 +41,12 @@ export default {
                 return this.item.amount
             },
             set(value) {
-                this.$store.commit('updateCartProductAmount', {productId: this.item.productId, amount: value})
+                this.$store.dispatch('updateCartProductAmount', {productId: this.item.productId, amount: value})
             }
         }
     },
     methods: {
-        ...mapMutations({deleteProduct : 'deleteCartProduct'})
+        ...mapActions({deleteProduct : 'removeCartProduct'})
     }
 }
 </script>

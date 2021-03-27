@@ -101,7 +101,7 @@
     </aside>
 </template>
 <script>
-import ColorPicker from "./ColorPicker.vue";
+import ColorPicker from "../App/AppColorPicker.vue";
 import axios from 'axios'
 import { API_BASE } from '@/config'
 

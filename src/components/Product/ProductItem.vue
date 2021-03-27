@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import ColorPicker from './ColorPicker.vue'
+import ColorPicker from '../App/AppColorPicker.vue'
 import gotoPage from '@/helpers/gotoPage'
 import numberFormat from '@/helpers/numberFormat'
 

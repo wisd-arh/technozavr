@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import CartIndicator from '@/components/CartIndicator.vue'
+import CartIndicator from '@/components/Cart/CartIndicator.vue'
 import { mapActions, mapMutations } from 'vuex'
 
 export default {

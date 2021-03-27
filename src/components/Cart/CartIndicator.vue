@@ -1,10 +1,10 @@
 <template>
     <router-link class="header__cart" :to="{name: 'cart'}" aria-label="Корзина с товарами">
         <div v-if='cartLoading'>
-            <img src='../../public/img/icons/loader.gif' width='30'/>
+            <img src='../../../public/img/icons/loader.gif' width='30'/>
         </div>
         <div v-else-if='cartLoadingError'>
-            <img src='../../public/img/icons/error.png' width='30'/>
+            <img src='../../../public/img/icons/error.png' width='30'/>
         </div>
         <div v-else>
             <svg width="30" height="21" fill="currentColor">

@@ -56,9 +56,9 @@
 import numberFormat from '@/helpers/numberFormat'
 import { mapGetters, mapActions} from 'vuex'
 import getNumEnding from '@/helpers/getNumEnding'
-import CartItem from '@/components/CartItem.vue'
-import LoaderInfo from '@/components/LoaderInfo.vue'
-import LoaderErrorInfo from '@/components/LoaderErrorInfo.vue'
+import CartItem from '@/components/Cart/CartItem.vue'
+import LoaderInfo from '@/components/Loaders/LoaderInfo.vue'
+import LoaderErrorInfo from '@/components/Loaders/LoaderErrorInfo.vue'
 
 export default {
     components: { CartItem, LoaderInfo, LoaderErrorInfo },
