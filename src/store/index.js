@@ -57,8 +57,10 @@ export default new Vuex.Store({
                     ...item,
                     product: {
                         ...product,
-                        image: product.image.file.url
-                    } 
+                        image: product.image.file.url,
+                        
+                    },
+                    positionCost: product.price * item.amount, 
                 }    
             })
         },
@@ -125,8 +127,9 @@ export default new Vuex.Store({
             })    
         },
         removeCartProduct(context, productId) {
+            context.commit('deleteCartProduct', productId)
             return new Promise((resolve, reject) => {
-                axios.delete(API_BASE + 'baskets/products', {
+                axios.delete(API_BASE + 'baskets/products2', {
                     params: {
                         userAccessKey: context.state.userAccessKey
                     },
@@ -134,11 +137,14 @@ export default new Vuex.Store({
                         productId: productId
                     }
                 })
-                .then(() => {
-                    context.commit('deleteCartProduct', productId)
+                .then((response) => {
+                    context.commit('updateCartProductsData', response.data.items)
                     resolve()
                 })
-                .catch(() => { reject() })
+                .catch(() => { 
+                    context.commit('syncCartProducts')
+                    reject() 
+                })
             })    
         }
     },

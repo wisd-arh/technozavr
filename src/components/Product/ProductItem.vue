@@ -34,12 +34,7 @@ export default {
   },
   computed: {
     productColors() {
-      return this.product.colors.map(color => {
-        return {
-          ...color,
-          value: color.code
-        }
-      })
+      return this.product.colors
     },
   },
   data() {

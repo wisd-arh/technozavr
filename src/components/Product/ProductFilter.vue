@@ -139,12 +139,7 @@ export default {
             return this.categoriesData ? this.categoriesData.items : []
         },
         colors() {
-            return this.colorsData ? this.colorsData.items.map(color => {
-                return {
-                ...color,
-                value: color.code
-                }            
-            }) : []
+            return this.colorsData ? this.colorsData.items : []
         },
     },
     methods: {

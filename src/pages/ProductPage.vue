@@ -178,12 +178,7 @@ export default {
     },
     computed: {
         colors() {
-            return this.productData ? this.productData.colors.map(color => {
-                return {
-                ...color,
-                value: color.code
-                }            
-            }) : []
+            return this.productData ? this.productData.colors : []
         },
         product() {
             return this.productData ? { ...this.productData,
