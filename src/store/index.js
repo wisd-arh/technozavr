@@ -129,7 +129,7 @@ export default new Vuex.Store({
         removeCartProduct(context, productId) {
             context.commit('deleteCartProduct', productId)
             return new Promise((resolve, reject) => {
-                axios.delete(API_BASE + 'baskets/products2', {
+                axios.delete(API_BASE + 'baskets/products', {
                     params: {
                         userAccessKey: context.state.userAccessKey
                     },
