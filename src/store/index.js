@@ -21,6 +21,11 @@ export default new Vuex.Store({
         //     } else 
         //         state.cartProducts.push({productId, amount})
         // },
+        resetCart(state) {
+            state.cartProducts = []
+            state.cartProductsData = []
+            // state.userAccessKey = null
+        },
         updateCartProductAmount(state, {productId, amount}) {
             let item = state.cartProducts.find(item => item.productId === productId)
             if (item) {
