@@ -153,12 +153,15 @@ export default {
             userAccessKey: this.$store.state.userAccessKey
           }
         })
-        .then(() => { this.$store.commit('resetCart')
-            this.formData = {}                  
+        .then(response => { 
+            this.$store.commit('resetCart')
+            this.formData = {}    
+            this.$store.commit('updateOrderInfo', response.data)
+            this.$router.push({name: 'orderInfo', params: { id: response.data.id }})
         })
         .catch(error => {
-          this.formErrorMessage = error.response.data.error.message
-          this.formError = error.response.data.error.request || {}})
+            this.formErrorMessage = error.response.data.error.message
+            this.formError = error.response.data.error.request || {}})
         .then(() => this.loading = false)  
       },
     }

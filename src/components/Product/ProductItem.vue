@@ -13,8 +13,11 @@
     <span class="catalog__price">
       {{ product.price | numberFormat }} ₽
     </span>
-
+    <div class="fl_container">
     <ColorPicker class="colors colors--black" :colors="productColors" :currentColor.sync="currentColor"/>
+      <img width=30 height=30 src="/img/svg/trolley_cart.svg" @click="addToCart(product.id)"/>
+    </div>
+    <div class="info hidden" ref="info">Добавлен в корзину</div>
   </li>
 </template>
 
@@ -46,7 +49,28 @@ export default {
     this.currentColor = this.productColors[0].id
   },
   methods: {
-    gotoPage
+    gotoPage,
+    addToCart(id) {
+      this.$store.dispatch('addProductToCart', {productId: id, amount: 1})
+      this.$refs.info.classList.toggle('hidden')
+      setTimeout(() => { this.$refs.info.classList.toggle('hidden') }, 2000)
+    },
   }
 }
 </script>
+<style scoped>
+.fl_container {
+  display: flex;
+  align-content: space-around;
+}
+
+.info {
+  display: inline-block;
+  transition: all 1000ms ease;
+}
+.hidden {
+  color: white;
+  display: none;
+  transition: all 1000ms ease;
+}
+</style>

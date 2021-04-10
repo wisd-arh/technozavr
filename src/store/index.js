@@ -12,19 +12,15 @@ export default new Vuex.Store({
         cartProductsData: [],
         cartLoading: false,
         cartLoadingError: false,
+        orderInfo: null,
     },
     mutations: {
-        // addProductToCart(state, {productId, amount}) {
-        //     let item = state.cartProducts.find(item => item.productId === productId)
-        //     if (item) {
-        //         item.amount += amount
-        //     } else 
-        //         state.cartProducts.push({productId, amount})
-        // },
+        updateOrderInfo(state, orderInfo) {
+            state.orderInfo = orderInfo
+        },
         resetCart(state) {
             state.cartProducts = []
             state.cartProductsData = []
-            // state.userAccessKey = null
         },
         updateCartProductAmount(state, {productId, amount}) {
             let item = state.cartProducts.find(item => item.productId === productId)
@@ -55,6 +51,9 @@ export default new Vuex.Store({
         }
     },
     getters: {
+        getOrderInfo(state) {
+            return state.orderInfo
+        },
         cartDetailProducts(state) {
             return state.cartProducts.map(item => {
                 const product =  state.cartProductsData.find(p => p.product.id === item.productId).product
@@ -67,6 +66,14 @@ export default new Vuex.Store({
                     },
                     positionCost: product.price * item.amount, 
                 }    
+            })
+        },
+        orderProducts(state) {
+            return state.orderInfo.basket.items.map(item => {
+                return {
+                    ...item,
+                    positionCost: item.price * item.quantity
+                }
             })
         },
         cartTotalPrice(state, getters) {
@@ -83,6 +90,12 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        loadOrderInfo(context, orderId) {
+            axios.get(API_BASE + 'orders/'+orderId,  {
+                params: { userAccessKey: context.state.userAccessKey }
+            })
+            .then(response => context.commit('updateOrderInfo', response.data))
+        },
         loadCart(context) {
             context.commit('updateLoadingStatus', {loading: true, error: false})
             axios.get(API_BASE + 'baskets', {
