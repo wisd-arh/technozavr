@@ -69,12 +69,14 @@ export default new Vuex.Store({
             })
         },
         orderProducts(state) {
-            return state.orderInfo.basket.items.map(item => {
-                return {
-                    ...item,
-                    positionCost: item.price * item.quantity
-                }
-            })
+            if (state.orderInfo) {
+                return state.orderInfo.basket.items.map(item => {
+                    return {
+                        ...item,
+                        positionCost: item.price * item.quantity
+                    }
+                })
+            } else { return []; }    
         },
         cartTotalPrice(state, getters) {
             return getters.cartDetailProducts.reduce((acc, item) => acc+= item.amount * item.product.price, 0)
@@ -91,10 +93,15 @@ export default new Vuex.Store({
     },
     actions: {
         loadOrderInfo(context, orderId) {
-            axios.get(API_BASE + 'orders/'+orderId,  {
-                params: { userAccessKey: context.state.userAccessKey }
-            })
-            .then(response => context.commit('updateOrderInfo', response.data))
+            return new Promise((resolve, reject) => {
+                    axios.get(API_BASE + 'orders/'+orderId,  {
+                    params: { userAccessKey: context.state.userAccessKey }
+                })
+                .then(response => { context.commit('updateOrderInfo', response.data)
+                    resolve()
+                })
+                .catch(() => reject())
+            })   
         },
         loadCart(context) {
             context.commit('updateLoadingStatus', {loading: true, error: false})

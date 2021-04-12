@@ -19,7 +19,7 @@
         </li>
       </ul>
 
-      <h1 class="content__title">
+      <h1 class="content__title" v-if="orderInfo">
         Заказ оформлен <span>№ {{ orderInfo.id }}</span>
       </h1>
     </div>
@@ -32,12 +32,12 @@
             Наши менеджеры свяжутся с&nbsp;Вами в&nbsp;течение часа для уточнения деталей доставки.
           </p>
 
-          <ul class="dictionary">
+          <ul class="dictionary" v-if="orderInfo">
             <li class="dictionary__item">
               <span class="dictionary__key">
                 Получатель
               </span>
-              <span class="dictionary__value">
+              <span class="dictionary__value" >
                 {{ orderInfo.name }}
               </span>
             </li>
@@ -77,11 +77,11 @@
         </div>
 
         <div class="cart__block">
-          <ul class="cart__orders">
+          <ul class="cart__orders" v-if="orderPositionsCount">
             <CartProductInfo v-for="item in orderProducts" :cartItem="item" :key="item.id"/>              
           </ul>
           
-          <div class="cart__total">
+          <div class="cart__total" v-if="orderPositionsCount">
             <p>Доставка: <b>500 ₽</b></p>
             <p>Итого: <b>{{ orderPositionsCount }}</b> {{ infoString }} на сумму <b>{{ orderTotalPrice | numberFormat }} ₽</b></p>
           </div>
@@ -103,7 +103,7 @@ export default {
         ...mapGetters({ orderInfo: 'getOrderInfo',
                         orderProducts: 'orderProducts' }),
         orderPositionsCount() {
-            return this.orderProducts.length
+            return this.orderProducts ? this.orderProducts.length : 0
         },
         infoString() {
             return getNumEnding(this.orderPositionsCount, ['товар', 'товара', 'товаров'])
@@ -117,6 +117,7 @@ export default {
             return;
         }
         this.$store.dispatch('loadOrderInfo', this.$route.params.id)
+            .catch(() => this.$router.replace({name: 'notFound', params: { '0': '/' }}))
     },
 }
 </script>
