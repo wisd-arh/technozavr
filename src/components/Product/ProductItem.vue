@@ -15,7 +15,7 @@
     </span>
     <div class="fl_container">
     <ColorPicker class="colors colors--black" :colors="productColors" :currentColor.sync="currentColor"/>
-      <img width=30 height=30 src="/img/svg/trolley_cart.svg" @click="addToCart(product.id)"/>
+      <img width=30 height=30 src="/technozavr-store/img/svg/trolley_cart.svg" @click="addToCart(product.id)"/>
     </div>
     <div class="info hidden" ref="info">Добавлен в корзину</div>
   </li>

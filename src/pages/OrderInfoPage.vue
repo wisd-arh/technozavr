@@ -1,5 +1,8 @@
 <template>
-  <main class="content container">
+  <main class="content container" v-if="loading">
+    <LoaderInfo title="Получение информации" />
+  </main>
+  <main class="content container" v-else>
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -93,11 +96,17 @@
 <script>
 import { mapGetters } from 'vuex'
 import CartProductInfo from '@/components/Cart/CartProductInfo.vue'
+import LoaderInfo from '@/components/Loaders/LoaderInfo.vue'
 import numberFormat from '@/helpers/numberFormat'
 import getNumEnding from '@/helpers/getNumEnding'
 
 export default {
-    components: { CartProductInfo },
+    data() {
+      return {
+        loading: false,
+      }
+    },
+    components: { CartProductInfo, LoaderInfo },
     filters: { numberFormat },
     computed: {
         ...mapGetters({ orderInfo: 'getOrderInfo',
@@ -112,12 +121,27 @@ export default {
             return this.orderProducts.reduce((acc, item) => { return acc + item.positionCost}, 0)
         }
     },
-    created() {
+    methods: {
+      loadOrderDetails() {
         if (this.$store.state.orderInfo && (this.$store.state.orderInfo.id === this.$route.params.id)) {
             return;
         }
+        this.loading = true
         this.$store.dispatch('loadOrderInfo', this.$route.params.id)
-            .catch(() => this.$router.replace({name: 'notFound', params: { '0': '/' }}))
+            .catch(() => { 
+                this.$router.replace({name: 'notFound', params: { '0': '/' }})
+            })
+            .then(() => this.loading = false)
+      }
     },
+    watch: {
+      '$route.params.id': {
+        handler() {
+          this.loadOrderDetails()
+        },
+        immediate: true
+      }      
+    },
+     
 }
 </script>
